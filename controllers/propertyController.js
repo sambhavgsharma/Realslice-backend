@@ -1,18 +1,20 @@
 import Property from '../models/Property.js';
-import SellOrder from '../models/sellOrder.js';
+import SellOrder from '../models/SellOrder.js';
 import User from '../models/User.js';
 // Create (List a property)
 export const createProperty = async (req, res) => {
   try {
-    const { name, location, currentPrice, totalShares } = req.body;
+    const { name, location, description, currentPrice, totalShares, blockchainId } = req.body;
     const availableShares = totalShares;
     const property = await Property.create({
       name,
       location,
+      description,
       currentPrice,
       totalShares,
       availableShares,
-      owner: req.user.id
+      owner: req.user.id,
+      blockchainId
     });
 
     const user = await User.findById(req.user.id);
@@ -23,7 +25,20 @@ export const createProperty = async (req, res) => {
 
     user.holdings.push({ propertyId: property.propertyId, sharesOwned: property.availableShares });
     await user.save();
-    res.status(201).json(property);
+    res.status(201).json({
+      message: "Property created successfully",
+      property: {
+        propertyId: property.propertyId,
+        blockchainId: property.blockchainId,
+        name: property.name,
+        location: property.location,
+        description: property.description,
+        currentPrice: property.currentPrice,
+        totalShares: property.totalShares,
+        availableShares: property.availableShares,
+        owner: req.user.id
+      }
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -54,11 +69,14 @@ export const getPropertyById = async (req, res) => {
     res.json({
       property: {
         propertyId: property.propertyId,
+        blockchainId: property.blockchainId,
         name: property.name,
         location: property.location,
+        description: property.description,
         currentPrice: property.currentPrice,
         totalShares: property.totalShares,
         availableShares: property.availableShares,
+        isListed: property.isListed,
         owner: {
           name: property.owner.name,
           email: property.owner.email

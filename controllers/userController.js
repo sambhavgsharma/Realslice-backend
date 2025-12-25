@@ -63,10 +63,40 @@ export const getUserProfile = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        wallet: user.wallet,
-        holdings: holdingsWithDetails,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt
+      wallet: user.wallet,
+      walletAddress: user.walletAddress,
+      holdings: holdingsWithDetails,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// LINK WALLET ADDRESS
+export const linkWalletAddress = async (req, res) => {
+  try {
+    const { walletAddress } = req.body;
+    
+    if (!walletAddress || typeof walletAddress !== 'string') {
+      return res.status(400).json({ message: "Valid wallet address required" });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { walletAddress },
+      { new: true }
+    ).select('-password');
+
+    res.json({ 
+      message: "Wallet linked successfully", 
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        walletAddress: user.walletAddress
       }
     });
   } catch (err) {

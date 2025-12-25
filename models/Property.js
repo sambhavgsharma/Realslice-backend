@@ -2,12 +2,15 @@ import mongoose from 'mongoose';
 
 const propertySchema = new mongoose.Schema({
   propertyId: { type: String, unique: true },
+  blockchainId: { type: Number, default: null }, // Token ID from smart contract
   name: { type: String, required: true },
   location: String,
+  description: String,
   currentPrice: { type: Number, default: 0 },
   totalShares: { type: Number, default: 0 },
   availableShares: { type: Number, default: 0 },
-  owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+  owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  isListed: { type: Boolean, default: false }
 }, { timestamps: true });
 
 propertySchema.pre('save', async function (next) {

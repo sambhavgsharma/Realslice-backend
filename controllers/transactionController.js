@@ -1,4 +1,4 @@
-import SellOrder from '../models/sellOrder.js';
+import SellOrder from '../models/SellOrder.js';
 import User from '../models/User.js';
 import Transaction from '../models/Transaction.js';
 import Property from '../models/Property.js';
